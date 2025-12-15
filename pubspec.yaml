@@ -30,6 +30,14 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+  # Drift 핵심 패키지
+  drift: ^2.12.0 # 최신 버전을 확인하세요
+  # SQLite 엔진 라이브러리
+  sqlite3_flutter_libs: ^0.5.23
+  # 파일 경로 관리
+  path_provider: ^2.1.1
+  path: ^1.8.3
+  sqlite3: ^2.4.0 # 최신 버전을 확인하세요.
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
@@ -38,6 +46,10 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  # Drift 코드 생성 도구
+  drift_dev: ^2.12.0 # Drift와 동일한 버전을 사용하는 것이 좋습니다.
+  # Dart 코드 생성 도구 실행기
+  build_runner: ^2.4.6
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
