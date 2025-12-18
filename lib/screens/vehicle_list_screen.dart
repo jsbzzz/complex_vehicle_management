@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../data/database/AppDatabase.dart';
+import '../repository/vehicle_repository.dart';
 
 class VehicleListScreen extends StatefulWidget {
   const VehicleListScreen({super.key});
@@ -14,7 +15,7 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final db = Provider.of<AppDatabase>(context);
+    final repository = Provider.of<VehicleRepository>(context);
 
     return Scaffold(
       appBar: AppBar(
@@ -29,30 +30,24 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
       // 수동 새로고침을 위한 RefreshIndicator
       body: RefreshIndicator(
         onRefresh: () async {
-          // 💡 새로고침 시작 알림 표시
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('데이터를 갱신하는 중입니다...'),
-              duration: Duration(milliseconds: 500),
-            ),
-          );
-
-          // 실시간 watch 중이므로 딜레이를 주어 사용자에게 갱신 느낌을 줌
-          await Future.delayed(const Duration(milliseconds: 800));
-
-          if (mounted) {
-            setState(() {});
-            // 💡 완료 알림 (선택 사항)
-            ScaffoldMessenger.of(context).showSnackBar(
-              const SnackBar(
-                content: Text('새로고침 완료'),
-                duration: Duration(seconds: 1),
-              ),
-            );
+          try {
+            // 💡 수동 새로고침 시 원격에 요청을 보냄
+            await repository.syncAllFromRemote();
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('서버와 동기화되었습니다.'))
+              );
+            }
+          } catch (e) {
+            if (mounted) {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('동기화 실패: 네트워크 상태를 확인하세요.'))
+              );
+            }
           }
         },
         child: StreamBuilder<List<VehicleTableData>>(
-          stream: db.select(db.vehicleTable).watch(),
+          stream: repository.watchVehicles(),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
