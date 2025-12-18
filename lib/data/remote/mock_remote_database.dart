@@ -6,7 +6,7 @@ class MockRemoteDataBase implements RemoteDataBase {
   final List<VehicleTableData> _mockServerStorage = [
     VehicleTableData(
       vehicleId: 999,
-      vehicleNumber: '서울12가3456',
+      vehicleNumber: '12가3456',
       vehicleModel: '원격아반떼',
       ownerName: '서버관리자',
       ownerPhone: '010-9999-9999',

@@ -39,6 +39,8 @@ class _VehicleListScreenState extends State<VehicleListScreen> {
               );
             }
           } catch (e) {
+            print("동기화 에러 발생: $e");
+
             if (mounted) {
               ScaffoldMessenger.of(context).showSnackBar(
                   const SnackBar(content: Text('동기화 실패: 네트워크 상태를 확인하세요.'))
