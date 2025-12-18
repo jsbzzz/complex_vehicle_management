@@ -363,9 +363,9 @@ class $VehicleTableTable extends VehicleTable
   late final GeneratedColumn<String> ownerPhone = GeneratedColumn<String>(
     'owner_phone',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
   static const VerificationMeta _ownerNameMeta = const VerificationMeta(
     'ownerName',
@@ -374,20 +374,20 @@ class $VehicleTableTable extends VehicleTable
   late final GeneratedColumn<String> ownerName = GeneratedColumn<String>(
     'owner_name',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.string,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
   );
-  static const VerificationMeta _ownerIdMeta = const VerificationMeta(
-    'ownerId',
+  static const VerificationMeta _villagerIdMeta = const VerificationMeta(
+    'villagerId',
   );
   @override
-  late final GeneratedColumn<int> ownerId = GeneratedColumn<int>(
-    'owner_id',
+  late final GeneratedColumn<int> villagerId = GeneratedColumn<int>(
+    'villager_id',
     aliasedName,
-    false,
+    true,
     type: DriftSqlType.int,
-    requiredDuringInsert: true,
+    requiredDuringInsert: false,
     defaultConstraints: GeneratedColumn.constraintIsAlways(
       'REFERENCES villager_table (id)',
     ),
@@ -399,7 +399,7 @@ class $VehicleTableTable extends VehicleTable
     vehicleModel,
     ownerPhone,
     ownerName,
-    ownerId,
+    villagerId,
   ];
   @override
   String get aliasedName => _alias ?? actualTableName;
@@ -446,24 +446,18 @@ class $VehicleTableTable extends VehicleTable
         _ownerPhoneMeta,
         ownerPhone.isAcceptableOrUnknown(data['owner_phone']!, _ownerPhoneMeta),
       );
-    } else if (isInserting) {
-      context.missing(_ownerPhoneMeta);
     }
     if (data.containsKey('owner_name')) {
       context.handle(
         _ownerNameMeta,
         ownerName.isAcceptableOrUnknown(data['owner_name']!, _ownerNameMeta),
       );
-    } else if (isInserting) {
-      context.missing(_ownerNameMeta);
     }
-    if (data.containsKey('owner_id')) {
+    if (data.containsKey('villager_id')) {
       context.handle(
-        _ownerIdMeta,
-        ownerId.isAcceptableOrUnknown(data['owner_id']!, _ownerIdMeta),
+        _villagerIdMeta,
+        villagerId.isAcceptableOrUnknown(data['villager_id']!, _villagerIdMeta),
       );
-    } else if (isInserting) {
-      context.missing(_ownerIdMeta);
     }
     return context;
   }
@@ -489,15 +483,15 @@ class $VehicleTableTable extends VehicleTable
       ownerPhone: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}owner_phone'],
-      )!,
+      ),
       ownerName: attachedDatabase.typeMapping.read(
         DriftSqlType.string,
         data['${effectivePrefix}owner_name'],
-      )!,
-      ownerId: attachedDatabase.typeMapping.read(
+      ),
+      villagerId: attachedDatabase.typeMapping.read(
         DriftSqlType.int,
-        data['${effectivePrefix}owner_id'],
-      )!,
+        data['${effectivePrefix}villager_id'],
+      ),
     );
   }
 
@@ -512,16 +506,16 @@ class VehicleTableData extends DataClass
   final int vehicleId;
   final String vehicleNumber;
   final String vehicleModel;
-  final String ownerPhone;
-  final String ownerName;
-  final int ownerId;
+  final String? ownerPhone;
+  final String? ownerName;
+  final int? villagerId;
   const VehicleTableData({
     required this.vehicleId,
     required this.vehicleNumber,
     required this.vehicleModel,
-    required this.ownerPhone,
-    required this.ownerName,
-    required this.ownerId,
+    this.ownerPhone,
+    this.ownerName,
+    this.villagerId,
   });
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -529,9 +523,15 @@ class VehicleTableData extends DataClass
     map['vehicle_id'] = Variable<int>(vehicleId);
     map['vehicle_number'] = Variable<String>(vehicleNumber);
     map['vehicle_model'] = Variable<String>(vehicleModel);
-    map['owner_phone'] = Variable<String>(ownerPhone);
-    map['owner_name'] = Variable<String>(ownerName);
-    map['owner_id'] = Variable<int>(ownerId);
+    if (!nullToAbsent || ownerPhone != null) {
+      map['owner_phone'] = Variable<String>(ownerPhone);
+    }
+    if (!nullToAbsent || ownerName != null) {
+      map['owner_name'] = Variable<String>(ownerName);
+    }
+    if (!nullToAbsent || villagerId != null) {
+      map['villager_id'] = Variable<int>(villagerId);
+    }
     return map;
   }
 
@@ -540,9 +540,15 @@ class VehicleTableData extends DataClass
       vehicleId: Value(vehicleId),
       vehicleNumber: Value(vehicleNumber),
       vehicleModel: Value(vehicleModel),
-      ownerPhone: Value(ownerPhone),
-      ownerName: Value(ownerName),
-      ownerId: Value(ownerId),
+      ownerPhone: ownerPhone == null && nullToAbsent
+          ? const Value.absent()
+          : Value(ownerPhone),
+      ownerName: ownerName == null && nullToAbsent
+          ? const Value.absent()
+          : Value(ownerName),
+      villagerId: villagerId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(villagerId),
     );
   }
 
@@ -555,9 +561,9 @@ class VehicleTableData extends DataClass
       vehicleId: serializer.fromJson<int>(json['vehicleId']),
       vehicleNumber: serializer.fromJson<String>(json['vehicleNumber']),
       vehicleModel: serializer.fromJson<String>(json['vehicleModel']),
-      ownerPhone: serializer.fromJson<String>(json['ownerPhone']),
-      ownerName: serializer.fromJson<String>(json['ownerName']),
-      ownerId: serializer.fromJson<int>(json['ownerId']),
+      ownerPhone: serializer.fromJson<String?>(json['ownerPhone']),
+      ownerName: serializer.fromJson<String?>(json['ownerName']),
+      villagerId: serializer.fromJson<int?>(json['villagerId']),
     );
   }
   @override
@@ -567,9 +573,9 @@ class VehicleTableData extends DataClass
       'vehicleId': serializer.toJson<int>(vehicleId),
       'vehicleNumber': serializer.toJson<String>(vehicleNumber),
       'vehicleModel': serializer.toJson<String>(vehicleModel),
-      'ownerPhone': serializer.toJson<String>(ownerPhone),
-      'ownerName': serializer.toJson<String>(ownerName),
-      'ownerId': serializer.toJson<int>(ownerId),
+      'ownerPhone': serializer.toJson<String?>(ownerPhone),
+      'ownerName': serializer.toJson<String?>(ownerName),
+      'villagerId': serializer.toJson<int?>(villagerId),
     };
   }
 
@@ -577,16 +583,16 @@ class VehicleTableData extends DataClass
     int? vehicleId,
     String? vehicleNumber,
     String? vehicleModel,
-    String? ownerPhone,
-    String? ownerName,
-    int? ownerId,
+    Value<String?> ownerPhone = const Value.absent(),
+    Value<String?> ownerName = const Value.absent(),
+    Value<int?> villagerId = const Value.absent(),
   }) => VehicleTableData(
     vehicleId: vehicleId ?? this.vehicleId,
     vehicleNumber: vehicleNumber ?? this.vehicleNumber,
     vehicleModel: vehicleModel ?? this.vehicleModel,
-    ownerPhone: ownerPhone ?? this.ownerPhone,
-    ownerName: ownerName ?? this.ownerName,
-    ownerId: ownerId ?? this.ownerId,
+    ownerPhone: ownerPhone.present ? ownerPhone.value : this.ownerPhone,
+    ownerName: ownerName.present ? ownerName.value : this.ownerName,
+    villagerId: villagerId.present ? villagerId.value : this.villagerId,
   );
   VehicleTableData copyWithCompanion(VehicleTableCompanion data) {
     return VehicleTableData(
@@ -601,7 +607,9 @@ class VehicleTableData extends DataClass
           ? data.ownerPhone.value
           : this.ownerPhone,
       ownerName: data.ownerName.present ? data.ownerName.value : this.ownerName,
-      ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
+      villagerId: data.villagerId.present
+          ? data.villagerId.value
+          : this.villagerId,
     );
   }
 
@@ -613,7 +621,7 @@ class VehicleTableData extends DataClass
           ..write('vehicleModel: $vehicleModel, ')
           ..write('ownerPhone: $ownerPhone, ')
           ..write('ownerName: $ownerName, ')
-          ..write('ownerId: $ownerId')
+          ..write('villagerId: $villagerId')
           ..write(')'))
         .toString();
   }
@@ -625,7 +633,7 @@ class VehicleTableData extends DataClass
     vehicleModel,
     ownerPhone,
     ownerName,
-    ownerId,
+    villagerId,
   );
   @override
   bool operator ==(Object other) =>
@@ -636,43 +644,40 @@ class VehicleTableData extends DataClass
           other.vehicleModel == this.vehicleModel &&
           other.ownerPhone == this.ownerPhone &&
           other.ownerName == this.ownerName &&
-          other.ownerId == this.ownerId);
+          other.villagerId == this.villagerId);
 }
 
 class VehicleTableCompanion extends UpdateCompanion<VehicleTableData> {
   final Value<int> vehicleId;
   final Value<String> vehicleNumber;
   final Value<String> vehicleModel;
-  final Value<String> ownerPhone;
-  final Value<String> ownerName;
-  final Value<int> ownerId;
+  final Value<String?> ownerPhone;
+  final Value<String?> ownerName;
+  final Value<int?> villagerId;
   const VehicleTableCompanion({
     this.vehicleId = const Value.absent(),
     this.vehicleNumber = const Value.absent(),
     this.vehicleModel = const Value.absent(),
     this.ownerPhone = const Value.absent(),
     this.ownerName = const Value.absent(),
-    this.ownerId = const Value.absent(),
+    this.villagerId = const Value.absent(),
   });
   VehicleTableCompanion.insert({
     this.vehicleId = const Value.absent(),
     required String vehicleNumber,
     required String vehicleModel,
-    required String ownerPhone,
-    required String ownerName,
-    required int ownerId,
+    this.ownerPhone = const Value.absent(),
+    this.ownerName = const Value.absent(),
+    this.villagerId = const Value.absent(),
   }) : vehicleNumber = Value(vehicleNumber),
-       vehicleModel = Value(vehicleModel),
-       ownerPhone = Value(ownerPhone),
-       ownerName = Value(ownerName),
-       ownerId = Value(ownerId);
+       vehicleModel = Value(vehicleModel);
   static Insertable<VehicleTableData> custom({
     Expression<int>? vehicleId,
     Expression<String>? vehicleNumber,
     Expression<String>? vehicleModel,
     Expression<String>? ownerPhone,
     Expression<String>? ownerName,
-    Expression<int>? ownerId,
+    Expression<int>? villagerId,
   }) {
     return RawValuesInsertable({
       if (vehicleId != null) 'vehicle_id': vehicleId,
@@ -680,7 +685,7 @@ class VehicleTableCompanion extends UpdateCompanion<VehicleTableData> {
       if (vehicleModel != null) 'vehicle_model': vehicleModel,
       if (ownerPhone != null) 'owner_phone': ownerPhone,
       if (ownerName != null) 'owner_name': ownerName,
-      if (ownerId != null) 'owner_id': ownerId,
+      if (villagerId != null) 'villager_id': villagerId,
     });
   }
 
@@ -688,9 +693,9 @@ class VehicleTableCompanion extends UpdateCompanion<VehicleTableData> {
     Value<int>? vehicleId,
     Value<String>? vehicleNumber,
     Value<String>? vehicleModel,
-    Value<String>? ownerPhone,
-    Value<String>? ownerName,
-    Value<int>? ownerId,
+    Value<String?>? ownerPhone,
+    Value<String?>? ownerName,
+    Value<int?>? villagerId,
   }) {
     return VehicleTableCompanion(
       vehicleId: vehicleId ?? this.vehicleId,
@@ -698,7 +703,7 @@ class VehicleTableCompanion extends UpdateCompanion<VehicleTableData> {
       vehicleModel: vehicleModel ?? this.vehicleModel,
       ownerPhone: ownerPhone ?? this.ownerPhone,
       ownerName: ownerName ?? this.ownerName,
-      ownerId: ownerId ?? this.ownerId,
+      villagerId: villagerId ?? this.villagerId,
     );
   }
 
@@ -720,8 +725,8 @@ class VehicleTableCompanion extends UpdateCompanion<VehicleTableData> {
     if (ownerName.present) {
       map['owner_name'] = Variable<String>(ownerName.value);
     }
-    if (ownerId.present) {
-      map['owner_id'] = Variable<int>(ownerId.value);
+    if (villagerId.present) {
+      map['villager_id'] = Variable<int>(villagerId.value);
     }
     return map;
   }
@@ -734,172 +739,7 @@ class VehicleTableCompanion extends UpdateCompanion<VehicleTableData> {
           ..write('vehicleModel: $vehicleModel, ')
           ..write('ownerPhone: $ownerPhone, ')
           ..write('ownerName: $ownerName, ')
-          ..write('ownerId: $ownerId')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $OwnTableTable extends OwnTable
-    with TableInfo<$OwnTableTable, OwnTableData> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $OwnTableTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _ownerIdMeta = const VerificationMeta(
-    'ownerId',
-  );
-  @override
-  late final GeneratedColumn<int> ownerId = GeneratedColumn<int>(
-    'owner_id',
-    aliasedName,
-    false,
-    type: DriftSqlType.int,
-    requiredDuringInsert: true,
-    defaultConstraints: GeneratedColumn.constraintIsAlways(
-      'REFERENCES villager_table (id)',
-    ),
-  );
-  @override
-  List<GeneratedColumn> get $columns => [ownerId];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'own_table';
-  @override
-  VerificationContext validateIntegrity(
-    Insertable<OwnTableData> instance, {
-    bool isInserting = false,
-  }) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('owner_id')) {
-      context.handle(
-        _ownerIdMeta,
-        ownerId.isAcceptableOrUnknown(data['owner_id']!, _ownerIdMeta),
-      );
-    } else if (isInserting) {
-      context.missing(_ownerIdMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => const {};
-  @override
-  OwnTableData map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return OwnTableData(
-      ownerId: attachedDatabase.typeMapping.read(
-        DriftSqlType.int,
-        data['${effectivePrefix}owner_id'],
-      )!,
-    );
-  }
-
-  @override
-  $OwnTableTable createAlias(String alias) {
-    return $OwnTableTable(attachedDatabase, alias);
-  }
-}
-
-class OwnTableData extends DataClass implements Insertable<OwnTableData> {
-  final int ownerId;
-  const OwnTableData({required this.ownerId});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['owner_id'] = Variable<int>(ownerId);
-    return map;
-  }
-
-  OwnTableCompanion toCompanion(bool nullToAbsent) {
-    return OwnTableCompanion(ownerId: Value(ownerId));
-  }
-
-  factory OwnTableData.fromJson(
-    Map<String, dynamic> json, {
-    ValueSerializer? serializer,
-  }) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return OwnTableData(ownerId: serializer.fromJson<int>(json['ownerId']));
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{'ownerId': serializer.toJson<int>(ownerId)};
-  }
-
-  OwnTableData copyWith({int? ownerId}) =>
-      OwnTableData(ownerId: ownerId ?? this.ownerId);
-  OwnTableData copyWithCompanion(OwnTableCompanion data) {
-    return OwnTableData(
-      ownerId: data.ownerId.present ? data.ownerId.value : this.ownerId,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('OwnTableData(')
-          ..write('ownerId: $ownerId')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => ownerId.hashCode;
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is OwnTableData && other.ownerId == this.ownerId);
-}
-
-class OwnTableCompanion extends UpdateCompanion<OwnTableData> {
-  final Value<int> ownerId;
-  final Value<int> rowid;
-  const OwnTableCompanion({
-    this.ownerId = const Value.absent(),
-    this.rowid = const Value.absent(),
-  });
-  OwnTableCompanion.insert({
-    required int ownerId,
-    this.rowid = const Value.absent(),
-  }) : ownerId = Value(ownerId);
-  static Insertable<OwnTableData> custom({
-    Expression<int>? ownerId,
-    Expression<int>? rowid,
-  }) {
-    return RawValuesInsertable({
-      if (ownerId != null) 'owner_id': ownerId,
-      if (rowid != null) 'rowid': rowid,
-    });
-  }
-
-  OwnTableCompanion copyWith({Value<int>? ownerId, Value<int>? rowid}) {
-    return OwnTableCompanion(
-      ownerId: ownerId ?? this.ownerId,
-      rowid: rowid ?? this.rowid,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (ownerId.present) {
-      map['owner_id'] = Variable<int>(ownerId.value);
-    }
-    if (rowid.present) {
-      map['rowid'] = Variable<int>(rowid.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('OwnTableCompanion(')
-          ..write('ownerId: $ownerId, ')
-          ..write('rowid: $rowid')
+          ..write('villagerId: $villagerId')
           ..write(')'))
         .toString();
   }
@@ -910,7 +750,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $VillagerTableTable villagerTable = $VillagerTableTable(this);
   late final $VehicleTableTable vehicleTable = $VehicleTableTable(this);
-  late final $OwnTableTable ownTable = $OwnTableTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -918,7 +757,6 @@ abstract class _$AppDatabase extends GeneratedDatabase {
   List<DatabaseSchemaEntity> get allSchemaEntities => [
     villagerTable,
     vehicleTable,
-    ownTable,
   ];
 }
 
@@ -951,7 +789,7 @@ final class $$VillagerTableTableReferences
     db.vehicleTable,
     aliasName: $_aliasNameGenerator(
       db.villagerTable.id,
-      db.vehicleTable.ownerId,
+      db.vehicleTable.villagerId,
     ),
   );
 
@@ -959,27 +797,9 @@ final class $$VillagerTableTableReferences
     final manager = $$VehicleTableTableTableManager(
       $_db,
       $_db.vehicleTable,
-    ).filter((f) => f.ownerId.id.sqlEquals($_itemColumn<int>('id')!));
+    ).filter((f) => f.villagerId.id.sqlEquals($_itemColumn<int>('id')!));
 
     final cache = $_typedResult.readTableOrNull(_vehicleTableRefsTable($_db));
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: cache),
-    );
-  }
-
-  static MultiTypedResultKey<$OwnTableTable, List<OwnTableData>>
-  _ownTableRefsTable(_$AppDatabase db) => MultiTypedResultKey.fromTable(
-    db.ownTable,
-    aliasName: $_aliasNameGenerator(db.villagerTable.id, db.ownTable.ownerId),
-  );
-
-  $$OwnTableTableProcessedTableManager get ownTableRefs {
-    final manager = $$OwnTableTableTableManager(
-      $_db,
-      $_db.ownTable,
-    ).filter((f) => f.ownerId.id.sqlEquals($_itemColumn<int>('id')!));
-
-    final cache = $_typedResult.readTableOrNull(_ownTableRefsTable($_db));
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: cache),
     );
@@ -1022,7 +842,7 @@ class $$VillagerTableTableFilterComposer
       composer: this,
       getCurrentColumn: (t) => t.id,
       referencedTable: $db.vehicleTable,
-      getReferencedColumn: (t) => t.ownerId,
+      getReferencedColumn: (t) => t.villagerId,
       builder:
           (
             joinBuilder, {
@@ -1031,31 +851,6 @@ class $$VillagerTableTableFilterComposer
           }) => $$VehicleTableTableFilterComposer(
             $db: $db,
             $table: $db.vehicleTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<bool> ownTableRefs(
-    Expression<bool> Function($$OwnTableTableFilterComposer f) f,
-  ) {
-    final $$OwnTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.ownTable,
-      getReferencedColumn: (t) => t.ownerId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$OwnTableTableFilterComposer(
-            $db: $db,
-            $table: $db.ownTable,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -1126,7 +921,7 @@ class $$VillagerTableTableAnnotationComposer
       composer: this,
       getCurrentColumn: (t) => t.id,
       referencedTable: $db.vehicleTable,
-      getReferencedColumn: (t) => t.ownerId,
+      getReferencedColumn: (t) => t.villagerId,
       builder:
           (
             joinBuilder, {
@@ -1135,31 +930,6 @@ class $$VillagerTableTableAnnotationComposer
           }) => $$VehicleTableTableAnnotationComposer(
             $db: $db,
             $table: $db.vehicleTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return f(composer);
-  }
-
-  Expression<T> ownTableRefs<T extends Object>(
-    Expression<T> Function($$OwnTableTableAnnotationComposer a) f,
-  ) {
-    final $$OwnTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.id,
-      referencedTable: $db.ownTable,
-      getReferencedColumn: (t) => t.ownerId,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$OwnTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.ownTable,
             $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
             joinBuilder: joinBuilder,
             $removeJoinBuilderFromRootComposer:
@@ -1183,7 +953,7 @@ class $$VillagerTableTableTableManager
           $$VillagerTableTableUpdateCompanionBuilder,
           (VillagerTableData, $$VillagerTableTableReferences),
           VillagerTableData,
-          PrefetchHooks Function({bool vehicleTableRefs, bool ownTableRefs})
+          PrefetchHooks Function({bool vehicleTableRefs})
         > {
   $$VillagerTableTableTableManager(_$AppDatabase db, $VillagerTableTable table)
     : super(
@@ -1228,63 +998,36 @@ class $$VillagerTableTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback:
-              ({vehicleTableRefs = false, ownTableRefs = false}) {
-                return PrefetchHooks(
-                  db: db,
-                  explicitlyWatchedTables: [
-                    if (vehicleTableRefs) db.vehicleTable,
-                    if (ownTableRefs) db.ownTable,
-                  ],
-                  addJoins: null,
-                  getPrefetchedDataCallback: (items) async {
-                    return [
-                      if (vehicleTableRefs)
-                        await $_getPrefetchedData<
-                          VillagerTableData,
-                          $VillagerTableTable,
-                          VehicleTableData
-                        >(
-                          currentTable: table,
-                          referencedTable: $$VillagerTableTableReferences
-                              ._vehicleTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$VillagerTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).vehicleTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.ownerId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                      if (ownTableRefs)
-                        await $_getPrefetchedData<
-                          VillagerTableData,
-                          $VillagerTableTable,
-                          OwnTableData
-                        >(
-                          currentTable: table,
-                          referencedTable: $$VillagerTableTableReferences
-                              ._ownTableRefsTable(db),
-                          managerFromTypedResult: (p0) =>
-                              $$VillagerTableTableReferences(
-                                db,
-                                table,
-                                p0,
-                              ).ownTableRefs,
-                          referencedItemsForCurrentItem:
-                              (item, referencedItems) => referencedItems.where(
-                                (e) => e.ownerId == item.id,
-                              ),
-                          typedResults: items,
-                        ),
-                    ];
-                  },
-                );
+          prefetchHooksCallback: ({vehicleTableRefs = false}) {
+            return PrefetchHooks(
+              db: db,
+              explicitlyWatchedTables: [if (vehicleTableRefs) db.vehicleTable],
+              addJoins: null,
+              getPrefetchedDataCallback: (items) async {
+                return [
+                  if (vehicleTableRefs)
+                    await $_getPrefetchedData<
+                      VillagerTableData,
+                      $VillagerTableTable,
+                      VehicleTableData
+                    >(
+                      currentTable: table,
+                      referencedTable: $$VillagerTableTableReferences
+                          ._vehicleTableRefsTable(db),
+                      managerFromTypedResult: (p0) =>
+                          $$VillagerTableTableReferences(
+                            db,
+                            table,
+                            p0,
+                          ).vehicleTableRefs,
+                      referencedItemsForCurrentItem: (item, referencedItems) =>
+                          referencedItems.where((e) => e.villagerId == item.id),
+                      typedResults: items,
+                    ),
+                ];
               },
+            );
+          },
         ),
       );
 }
@@ -1301,25 +1044,25 @@ typedef $$VillagerTableTableProcessedTableManager =
       $$VillagerTableTableUpdateCompanionBuilder,
       (VillagerTableData, $$VillagerTableTableReferences),
       VillagerTableData,
-      PrefetchHooks Function({bool vehicleTableRefs, bool ownTableRefs})
+      PrefetchHooks Function({bool vehicleTableRefs})
     >;
 typedef $$VehicleTableTableCreateCompanionBuilder =
     VehicleTableCompanion Function({
       Value<int> vehicleId,
       required String vehicleNumber,
       required String vehicleModel,
-      required String ownerPhone,
-      required String ownerName,
-      required int ownerId,
+      Value<String?> ownerPhone,
+      Value<String?> ownerName,
+      Value<int?> villagerId,
     });
 typedef $$VehicleTableTableUpdateCompanionBuilder =
     VehicleTableCompanion Function({
       Value<int> vehicleId,
       Value<String> vehicleNumber,
       Value<String> vehicleModel,
-      Value<String> ownerPhone,
-      Value<String> ownerName,
-      Value<int> ownerId,
+      Value<String?> ownerPhone,
+      Value<String?> ownerName,
+      Value<int?> villagerId,
     });
 
 final class $$VehicleTableTableReferences
@@ -1327,19 +1070,19 @@ final class $$VehicleTableTableReferences
         BaseReferences<_$AppDatabase, $VehicleTableTable, VehicleTableData> {
   $$VehicleTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
 
-  static $VillagerTableTable _ownerIdTable(_$AppDatabase db) =>
+  static $VillagerTableTable _villagerIdTable(_$AppDatabase db) =>
       db.villagerTable.createAlias(
-        $_aliasNameGenerator(db.vehicleTable.ownerId, db.villagerTable.id),
+        $_aliasNameGenerator(db.vehicleTable.villagerId, db.villagerTable.id),
       );
 
-  $$VillagerTableTableProcessedTableManager get ownerId {
-    final $_column = $_itemColumn<int>('owner_id')!;
-
+  $$VillagerTableTableProcessedTableManager? get villagerId {
+    final $_column = $_itemColumn<int>('villager_id');
+    if ($_column == null) return null;
     final manager = $$VillagerTableTableTableManager(
       $_db,
       $_db.villagerTable,
     ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_ownerIdTable($_db));
+    final item = $_typedResult.readTableOrNull(_villagerIdTable($_db));
     if (item == null) return manager;
     return ProcessedTableManager(
       manager.$state.copyWith(prefetchedData: [item]),
@@ -1381,10 +1124,10 @@ class $$VehicleTableTableFilterComposer
     builder: (column) => ColumnFilters(column),
   );
 
-  $$VillagerTableTableFilterComposer get ownerId {
+  $$VillagerTableTableFilterComposer get villagerId {
     final $$VillagerTableTableFilterComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.ownerId,
+      getCurrentColumn: (t) => t.villagerId,
       referencedTable: $db.villagerTable,
       getReferencedColumn: (t) => t.id,
       builder:
@@ -1439,10 +1182,10 @@ class $$VehicleTableTableOrderingComposer
     builder: (column) => ColumnOrderings(column),
   );
 
-  $$VillagerTableTableOrderingComposer get ownerId {
+  $$VillagerTableTableOrderingComposer get villagerId {
     final $$VillagerTableTableOrderingComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.ownerId,
+      getCurrentColumn: (t) => t.villagerId,
       referencedTable: $db.villagerTable,
       getReferencedColumn: (t) => t.id,
       builder:
@@ -1493,10 +1236,10 @@ class $$VehicleTableTableAnnotationComposer
   GeneratedColumn<String> get ownerName =>
       $composableBuilder(column: $table.ownerName, builder: (column) => column);
 
-  $$VillagerTableTableAnnotationComposer get ownerId {
+  $$VillagerTableTableAnnotationComposer get villagerId {
     final $$VillagerTableTableAnnotationComposer composer = $composerBuilder(
       composer: this,
-      getCurrentColumn: (t) => t.ownerId,
+      getCurrentColumn: (t) => t.villagerId,
       referencedTable: $db.villagerTable,
       getReferencedColumn: (t) => t.id,
       builder:
@@ -1530,7 +1273,7 @@ class $$VehicleTableTableTableManager
           $$VehicleTableTableUpdateCompanionBuilder,
           (VehicleTableData, $$VehicleTableTableReferences),
           VehicleTableData,
-          PrefetchHooks Function({bool ownerId})
+          PrefetchHooks Function({bool villagerId})
         > {
   $$VehicleTableTableTableManager(_$AppDatabase db, $VehicleTableTable table)
     : super(
@@ -1548,32 +1291,32 @@ class $$VehicleTableTableTableManager
                 Value<int> vehicleId = const Value.absent(),
                 Value<String> vehicleNumber = const Value.absent(),
                 Value<String> vehicleModel = const Value.absent(),
-                Value<String> ownerPhone = const Value.absent(),
-                Value<String> ownerName = const Value.absent(),
-                Value<int> ownerId = const Value.absent(),
+                Value<String?> ownerPhone = const Value.absent(),
+                Value<String?> ownerName = const Value.absent(),
+                Value<int?> villagerId = const Value.absent(),
               }) => VehicleTableCompanion(
                 vehicleId: vehicleId,
                 vehicleNumber: vehicleNumber,
                 vehicleModel: vehicleModel,
                 ownerPhone: ownerPhone,
                 ownerName: ownerName,
-                ownerId: ownerId,
+                villagerId: villagerId,
               ),
           createCompanionCallback:
               ({
                 Value<int> vehicleId = const Value.absent(),
                 required String vehicleNumber,
                 required String vehicleModel,
-                required String ownerPhone,
-                required String ownerName,
-                required int ownerId,
+                Value<String?> ownerPhone = const Value.absent(),
+                Value<String?> ownerName = const Value.absent(),
+                Value<int?> villagerId = const Value.absent(),
               }) => VehicleTableCompanion.insert(
                 vehicleId: vehicleId,
                 vehicleNumber: vehicleNumber,
                 vehicleModel: vehicleModel,
                 ownerPhone: ownerPhone,
                 ownerName: ownerName,
-                ownerId: ownerId,
+                villagerId: villagerId,
               ),
           withReferenceMapper: (p0) => p0
               .map(
@@ -1583,7 +1326,7 @@ class $$VehicleTableTableTableManager
                 ),
               )
               .toList(),
-          prefetchHooksCallback: ({ownerId = false}) {
+          prefetchHooksCallback: ({villagerId = false}) {
             return PrefetchHooks(
               db: db,
               explicitlyWatchedTables: [],
@@ -1603,15 +1346,15 @@ class $$VehicleTableTableTableManager
                       dynamic
                     >
                   >(state) {
-                    if (ownerId) {
+                    if (villagerId) {
                       state =
                           state.withJoin(
                                 currentTable: table,
-                                currentColumn: table.ownerId,
+                                currentColumn: table.villagerId,
                                 referencedTable: $$VehicleTableTableReferences
-                                    ._ownerIdTable(db),
+                                    ._villagerIdTable(db),
                                 referencedColumn: $$VehicleTableTableReferences
-                                    ._ownerIdTable(db)
+                                    ._villagerIdTable(db)
                                     .id,
                               )
                               as T;
@@ -1640,238 +1383,7 @@ typedef $$VehicleTableTableProcessedTableManager =
       $$VehicleTableTableUpdateCompanionBuilder,
       (VehicleTableData, $$VehicleTableTableReferences),
       VehicleTableData,
-      PrefetchHooks Function({bool ownerId})
-    >;
-typedef $$OwnTableTableCreateCompanionBuilder =
-    OwnTableCompanion Function({required int ownerId, Value<int> rowid});
-typedef $$OwnTableTableUpdateCompanionBuilder =
-    OwnTableCompanion Function({Value<int> ownerId, Value<int> rowid});
-
-final class $$OwnTableTableReferences
-    extends BaseReferences<_$AppDatabase, $OwnTableTable, OwnTableData> {
-  $$OwnTableTableReferences(super.$_db, super.$_table, super.$_typedResult);
-
-  static $VillagerTableTable _ownerIdTable(_$AppDatabase db) =>
-      db.villagerTable.createAlias(
-        $_aliasNameGenerator(db.ownTable.ownerId, db.villagerTable.id),
-      );
-
-  $$VillagerTableTableProcessedTableManager get ownerId {
-    final $_column = $_itemColumn<int>('owner_id')!;
-
-    final manager = $$VillagerTableTableTableManager(
-      $_db,
-      $_db.villagerTable,
-    ).filter((f) => f.id.sqlEquals($_column));
-    final item = $_typedResult.readTableOrNull(_ownerIdTable($_db));
-    if (item == null) return manager;
-    return ProcessedTableManager(
-      manager.$state.copyWith(prefetchedData: [item]),
-    );
-  }
-}
-
-class $$OwnTableTableFilterComposer
-    extends Composer<_$AppDatabase, $OwnTableTable> {
-  $$OwnTableTableFilterComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  $$VillagerTableTableFilterComposer get ownerId {
-    final $$VillagerTableTableFilterComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.ownerId,
-      referencedTable: $db.villagerTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$VillagerTableTableFilterComposer(
-            $db: $db,
-            $table: $db.villagerTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$OwnTableTableOrderingComposer
-    extends Composer<_$AppDatabase, $OwnTableTable> {
-  $$OwnTableTableOrderingComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  $$VillagerTableTableOrderingComposer get ownerId {
-    final $$VillagerTableTableOrderingComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.ownerId,
-      referencedTable: $db.villagerTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$VillagerTableTableOrderingComposer(
-            $db: $db,
-            $table: $db.villagerTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$OwnTableTableAnnotationComposer
-    extends Composer<_$AppDatabase, $OwnTableTable> {
-  $$OwnTableTableAnnotationComposer({
-    required super.$db,
-    required super.$table,
-    super.joinBuilder,
-    super.$addJoinBuilderToRootComposer,
-    super.$removeJoinBuilderFromRootComposer,
-  });
-  $$VillagerTableTableAnnotationComposer get ownerId {
-    final $$VillagerTableTableAnnotationComposer composer = $composerBuilder(
-      composer: this,
-      getCurrentColumn: (t) => t.ownerId,
-      referencedTable: $db.villagerTable,
-      getReferencedColumn: (t) => t.id,
-      builder:
-          (
-            joinBuilder, {
-            $addJoinBuilderToRootComposer,
-            $removeJoinBuilderFromRootComposer,
-          }) => $$VillagerTableTableAnnotationComposer(
-            $db: $db,
-            $table: $db.villagerTable,
-            $addJoinBuilderToRootComposer: $addJoinBuilderToRootComposer,
-            joinBuilder: joinBuilder,
-            $removeJoinBuilderFromRootComposer:
-                $removeJoinBuilderFromRootComposer,
-          ),
-    );
-    return composer;
-  }
-}
-
-class $$OwnTableTableTableManager
-    extends
-        RootTableManager<
-          _$AppDatabase,
-          $OwnTableTable,
-          OwnTableData,
-          $$OwnTableTableFilterComposer,
-          $$OwnTableTableOrderingComposer,
-          $$OwnTableTableAnnotationComposer,
-          $$OwnTableTableCreateCompanionBuilder,
-          $$OwnTableTableUpdateCompanionBuilder,
-          (OwnTableData, $$OwnTableTableReferences),
-          OwnTableData,
-          PrefetchHooks Function({bool ownerId})
-        > {
-  $$OwnTableTableTableManager(_$AppDatabase db, $OwnTableTable table)
-    : super(
-        TableManagerState(
-          db: db,
-          table: table,
-          createFilteringComposer: () =>
-              $$OwnTableTableFilterComposer($db: db, $table: table),
-          createOrderingComposer: () =>
-              $$OwnTableTableOrderingComposer($db: db, $table: table),
-          createComputedFieldComposer: () =>
-              $$OwnTableTableAnnotationComposer($db: db, $table: table),
-          updateCompanionCallback:
-              ({
-                Value<int> ownerId = const Value.absent(),
-                Value<int> rowid = const Value.absent(),
-              }) => OwnTableCompanion(ownerId: ownerId, rowid: rowid),
-          createCompanionCallback:
-              ({
-                required int ownerId,
-                Value<int> rowid = const Value.absent(),
-              }) => OwnTableCompanion.insert(ownerId: ownerId, rowid: rowid),
-          withReferenceMapper: (p0) => p0
-              .map(
-                (e) => (
-                  e.readTable(table),
-                  $$OwnTableTableReferences(db, table, e),
-                ),
-              )
-              .toList(),
-          prefetchHooksCallback: ({ownerId = false}) {
-            return PrefetchHooks(
-              db: db,
-              explicitlyWatchedTables: [],
-              addJoins:
-                  <
-                    T extends TableManagerState<
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic,
-                      dynamic
-                    >
-                  >(state) {
-                    if (ownerId) {
-                      state =
-                          state.withJoin(
-                                currentTable: table,
-                                currentColumn: table.ownerId,
-                                referencedTable: $$OwnTableTableReferences
-                                    ._ownerIdTable(db),
-                                referencedColumn: $$OwnTableTableReferences
-                                    ._ownerIdTable(db)
-                                    .id,
-                              )
-                              as T;
-                    }
-
-                    return state;
-                  },
-              getPrefetchedDataCallback: (items) async {
-                return [];
-              },
-            );
-          },
-        ),
-      );
-}
-
-typedef $$OwnTableTableProcessedTableManager =
-    ProcessedTableManager<
-      _$AppDatabase,
-      $OwnTableTable,
-      OwnTableData,
-      $$OwnTableTableFilterComposer,
-      $$OwnTableTableOrderingComposer,
-      $$OwnTableTableAnnotationComposer,
-      $$OwnTableTableCreateCompanionBuilder,
-      $$OwnTableTableUpdateCompanionBuilder,
-      (OwnTableData, $$OwnTableTableReferences),
-      OwnTableData,
-      PrefetchHooks Function({bool ownerId})
+      PrefetchHooks Function({bool villagerId})
     >;
 
 class $AppDatabaseManager {
@@ -1881,6 +1393,4 @@ class $AppDatabaseManager {
       $$VillagerTableTableTableManager(_db, _db.villagerTable);
   $$VehicleTableTableTableManager get vehicleTable =>
       $$VehicleTableTableTableManager(_db, _db.vehicleTable);
-  $$OwnTableTableTableManager get ownTable =>
-      $$OwnTableTableTableManager(_db, _db.ownTable);
 }

@@ -9,6 +9,10 @@ import 'package:sqlite3/sqlite3.dart'; // sqlite3.open 사용
 import '../table/Tables.dart';
 part 'AppDatabase.g.dart';
 
+//.g.dart 파일 새로 빌드
+// flutter pub run build_runner build --delete-conflicting-outputs
+// dart run build_runner build --delete-conflicting-outputs
+
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
@@ -23,7 +27,7 @@ LazyDatabase _openConnection() {
   });
 }
 
-@DriftDatabase(tables: [VehicleTable, VillagerTable, OwnTable])
+@DriftDatabase(tables: [VehicleTable, VillagerTable])
 class AppDatabase extends _$AppDatabase {
   // 생성자에서 데이터베이스 연결을 설정하는 함수를 호출합니다.
   AppDatabase() : super(_openConnection());
