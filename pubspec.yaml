@@ -42,6 +42,10 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
+  camera: ^0.11.2+1
+  google_mlkit_text_recognition: ^0.15.0
+  fluttertoast: ^9.0.0
+
 
 dev_dependencies:
   flutter_test:
@@ -50,7 +54,6 @@ dev_dependencies:
   drift_dev: ^2.12.0 # Drift와 동일한 버전을 사용하는 것이 좋습니다.
   # Dart 코드 생성 도구 실행기
   build_runner: ^2.4.6
-
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is
   # activated in the `analysis_options.yaml` file located at the root of your
