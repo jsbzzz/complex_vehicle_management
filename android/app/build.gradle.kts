@@ -7,8 +7,8 @@ plugins {
 
 android {
     namespace = "com.example.complex_vehicle_management"
-    compileSdk = 35
-    ndkVersion = "27.0.12077973"
+    compileSdk = flutter.compileSdkVersion
+    ndkVersion = flutter.ndkVersion
 
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
