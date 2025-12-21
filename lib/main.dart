@@ -1,10 +1,11 @@
 import 'package:complex_vehicle_management/repository/vehicle_repository.dart';
+import 'package:complex_vehicle_management/screens/camera_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'data/database/AppDatabase.dart';
-import 'data/remote/mock_remote_database.dart';
-import 'screens/vehicle_list_screen.dart';
-import 'screens/vehicle_search_screen.dart';
+import 'package:complex_vehicle_management/data/database/AppDatabase.dart';
+import 'package:complex_vehicle_management/data/remote/mock_remote_database.dart';
+import 'package:complex_vehicle_management/screens/vehicle_list_screen.dart';
+import 'package:complex_vehicle_management/screens/vehicle_search_screen.dart';
 import 'screens/vehicle_insert_screen.dart';
 
 void main() {
@@ -56,7 +57,8 @@ class MainNavigationScreenState extends State<MainNavigationScreen> {
   final List<Widget> _screens = [
     const VehicleListScreen(),
     const VehicleSearchScreen(),
-    const VehicleInsertScreen(),
+    // const VehicleInsertScreen(),
+    const CameraScreen(),
   ];
 
   void changeTab(int index) {
